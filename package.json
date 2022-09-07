@@ -7,7 +7,7 @@
   "description": "electron-demo is a simple development",
   "scripts": {
     "start": "electron .",
-    "dev": "nodemon --watch main.js --exec electron .",
+    "dev": "nodemon --watch main.js --exec \"electron .\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },

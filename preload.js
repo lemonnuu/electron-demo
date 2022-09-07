@@ -1,5 +1,6 @@
-// All the Node.js APIs are available in the preload process.
-// 它拥有与Chrome扩展一样的沙盒。
+const {ipcRenderer} = require('electron')
+const { contextBridge } = require('electron')
+
 window.addEventListener("DOMContentLoaded", () => {
   const replaceText = (selector, text) => {
     const element = document.getElementById(selector);
@@ -9,4 +10,16 @@ window.addEventListener("DOMContentLoaded", () => {
   for (const dependency of ["chrome", "node", "electron"]) {
     replaceText(`${dependency}-version`, process.versions[dependency]);
   }
+
+  contextBridge.exposeInMainWorld('demo', {
+    msg: 'hello, world'
+  })
+
+  ipcRenderer.on('getURLSchema', (event, arg) => {
+    console.log('event', event);
+    console.log('arg', arg);
+    replaceText('schema', arg || '无')
+  })
 });
+
+

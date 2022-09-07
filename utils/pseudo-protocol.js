@@ -46,8 +46,32 @@ function handleArgv(argv, scheme) {
   return defaultSchema;
 }
 
+// 单实例
+function singleInstance () {
+  const gotTheLock = app.requestSingleInstanceLock()
+  if (!gotTheLock) {
+    return app.quit()
+  }
+  app.on('second-instance', (event, argv) => {
+    if (process.platform === 'win32') {
+      // 这里还没写完, 拿到参数干什么
+      handleArgv(argv)
+    }
+  })
+  // 处理 MacOS 系统
+  app.on('open-url', (event, url) => {
+    // 这里也没写完, 拿到参数干什么
+    handleURL(url)
+  })
+}
+
+function handleURL(url) {
+  return url
+}
+
 module.exports = {
   setDefaultProtocol,
   deleteDefaultProtocol,
   handleArgv,
+  singleInstance
 };
