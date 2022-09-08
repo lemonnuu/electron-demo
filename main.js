@@ -1,14 +1,15 @@
-const { app, BrowserWindow, BrowserView, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const {
   setDefaultProtocol,
   deleteDefaultProtocol,
   handleArgv,
   singleInstance
 } = require("./utils/pseudo-protocol");
+const {sendMsg} = require('./utils/interact')
 const path = require("path");
+const fs = require('fs')
 
-const _SCHEMAPROTOCOL = "electron-demo";
-let singleWindow = null
+const _SCHEMAPROTOCOL = "electron-demo"; // 自定义协议名
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -20,22 +21,29 @@ const createWindow = () => {
   });
 
   // mainWindow.loadFile("index.html");
-  mainWindow.loadURL("http://127.0.0.1:5501/embedded.html");
+  mainWindow.loadURL("http://127.0.0.1:5500/helper/embedded.html");
   
   // 打开开发工具
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show() 
+  })
 
   return mainWindow
 };
 
 app.whenReady().then(() => {
-  singleWindow = createWindow();
+  const singleWindow = createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   })
 
-  const test = handleArgv(process.argv, _SCHEMAPROTOCOL);
-  singleWindow.send('getURLSchema', test)
+  // const schema = handleArgv(process.argv, _SCHEMAPROTOCOL);
+  // const url = new URL(schema)
+  // singleWindow.loadFile(url.searchParams.get('url'))
+
+  singleWindow.send('getURLSchema', process.argv)
 
 });
 
@@ -45,3 +53,7 @@ app.on("window-all-closed", () => {
 
 setDefaultProtocol(_SCHEMAPROTOCOL);
 // deleteDefaultProtocol(_SCHEMAPROTOCOL);
+
+// 交互部分
+sendMsg()
+

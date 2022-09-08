@@ -10,14 +10,19 @@ window.addEventListener("DOMContentLoaded", () => {
   for (const dependency of ["chrome", "node", "electron"]) {
     replaceText(`${dependency}-version`, process.versions[dependency]);
   }
+  // replaceText('schema', 'uuuuuuuuuuuuu')
 
   contextBridge.exposeInMainWorld('demo', {
-    msg: 'hello, world'
+    sendMsg: (params) => {
+      ipcRenderer.send('sendMsg', params)
+    }
   })
 
   ipcRenderer.on('getURLSchema', (event, arg) => {
     console.log('event', event);
     console.log('arg', arg);
+    // const url = new URL(arg)
+    // console.log(url.searchParams.get('url'));
     replaceText('schema', arg || '无')
   })
 });

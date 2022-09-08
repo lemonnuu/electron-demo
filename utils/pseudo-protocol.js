@@ -40,8 +40,12 @@ function deleteDefaultProtocol(scheme) {
 
 // 根据 process.argv 获取自定义协议
 function handleArgv(argv, scheme) {
+  let offset = 1
+  if (!app.isPackaged) {
+    offset++
+  }
   const defaultSchema = (argv || []).find((item, index) => {
-    return item.startsWith(`${scheme}://`);
+    return index >= offset && item.startsWith(`${scheme}://`);
   });
   return defaultSchema;
 }
