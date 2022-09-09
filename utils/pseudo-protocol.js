@@ -40,9 +40,9 @@ function deleteDefaultProtocol(scheme) {
 
 // 根据 process.argv 获取自定义协议
 function handleArgv(argv, scheme) {
-  let offset = 1
+  let offset = 1;
   if (!app.isPackaged) {
-    offset++
+    offset++;
   }
   const defaultSchema = (argv || []).find((item, index) => {
     return index >= offset && item.startsWith(`${scheme}://`);
@@ -51,31 +51,30 @@ function handleArgv(argv, scheme) {
 }
 
 // 单实例
-function singleInstance () {
-  const gotTheLock = app.requestSingleInstanceLock()
+function singleInstance(singWindow) {
+  const gotTheLock = app.requestSingleInstanceLock();
   if (!gotTheLock) {
-    return app.quit()
+    return app.quit();
   }
-  app.on('second-instance', (event, argv) => {
-    if (process.platform === 'win32') {
+  app.on("second-instance", (event, argv) => {
+    if (process.platform === "win32") {
       // 这里还没写完, 拿到参数干什么
-      handleArgv(argv)
+      // handleArgv(argv);
+      if (singWindow) {
+        if (singWindow.isMinimized()) singWindow.restore();
+        singWindow.focus();
+      }
     }
-  })
-  // 处理 MacOS 系统
-  app.on('open-url', (event, url) => {
-    // 这里也没写完, 拿到参数干什么
-    handleURL(url)
-  })
-}
-
-function handleURL(url) {
-  return url
+  });
+  // // 处理 MacOS 系统
+  // app.on('open-url', (event, url) => {
+  //   // 这里也没写完, 拿到参数干什么
+  // })
 }
 
 module.exports = {
   setDefaultProtocol,
   deleteDefaultProtocol,
   handleArgv,
-  singleInstance
+  singleInstance,
 };
